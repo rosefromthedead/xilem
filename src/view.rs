@@ -23,6 +23,9 @@ pub mod button;
 // pub mod text;
 // pub mod use_state;
 // pub mod vstack;
+pub mod seq;
+
+pub use seq::ViewSequence;
 
 use std::{
     any::Any,
