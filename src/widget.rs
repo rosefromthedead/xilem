@@ -22,7 +22,7 @@ pub mod piet_scene_helpers;
 mod raw_event;
 //pub mod scroll_view;
 //pub mod text;
-//pub mod vstack;
+pub mod stack;
 
 use std::any::Any;
 use std::ops::{Deref, DerefMut};

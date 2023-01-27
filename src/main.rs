@@ -1,7 +1,20 @@
-use xilem::{button, App, AppLauncher, View};
+use xilem::{button, stack, App, AppLauncher, Axis, View};
 
-fn app_logic(_data: &mut ()) -> impl View<()> {
-    button("click me", |_| println!("clicked"))
+fn app_logic(data: &mut (i32, Axis)) -> impl View<(i32, Axis)> {
+    stack(
+        (
+            button(format!("{}+", data.0), |data: &mut (i32, Axis)| data.0 += 1),
+            button(format!("{}-", data.0), |data: &mut (i32, Axis)| data.0 -= 1),
+            button(format!("flip!"), |(_, ref mut axis): &mut (i32, Axis)| {
+                *axis = match axis {
+                    Axis::Horizontal => Axis::Vertical,
+                    Axis::Vertical => Axis::Horizontal,
+                }
+            }),
+        ),
+        4.0,
+        data.1,
+    )
 }
 
 fn main() {
@@ -15,6 +28,6 @@ fn main() {
     window_handle.show();
     app.run(None);
     */
-    let app = App::new((), app_logic);
+    let app = App::new((0, Axis::Vertical), app_logic);
     AppLauncher::new(app).run()
 }

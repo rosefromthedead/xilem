@@ -10,6 +10,8 @@ mod widget;
 pub use app::App;
 pub use app_main::AppLauncher;
 pub use view::button::button;
+pub use view::stack::{hstack, stack, vstack};
 pub use view::View;
+pub use widget::Axis;
 pub use widget::Pod;
 pub use widget::Widget;
