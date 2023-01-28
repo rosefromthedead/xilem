@@ -23,6 +23,7 @@ pub mod piet_scene_helpers;
 mod raw_event;
 //pub mod scroll_view;
 //pub mod text;
+pub mod compose_style;
 pub mod stack;
 
 use std::any::Any;

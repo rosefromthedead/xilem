@@ -123,13 +123,6 @@ impl Widget for Stack {
     }
 
     fn paint(&mut self, cx: &mut PaintCx, b: &mut SceneBuilder) {
-        b.fill(
-            Fill::NonZero,
-            Affine::IDENTITY,
-            BrushRef::Solid(Color::rgb8(0x20, 0x20, 0x28)),
-            None,
-            &Rect::from_origin_size((0.0, 0.0), cx.widget_state.size),
-        );
         for child in &mut self.children {
             child.paint(cx);
             b.append(
