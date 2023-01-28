@@ -1,14 +1,19 @@
 use glazier::kurbo::RoundedRectRadii;
-use vello::peniko::Color;
+use vello::peniko::{Brush, Color};
 
 use crate::View;
 
-use super::style::{BackgroundView, PaddingView, RoundedView};
+use super::style::{BackgroundView, BorderView, PaddingView};
 
 pub trait ViewExt<T, A>: Sized {
     fn padding(self, width: f64) -> PaddingView<Self>;
     fn background(self, color: Color) -> BackgroundView<Self>;
-    fn rounded(self, radii: impl Into<RoundedRectRadii>) -> RoundedView<Self>;
+    fn border(
+        self,
+        radii: impl Into<RoundedRectRadii>,
+        width: f32,
+        brush: Brush,
+    ) -> BorderView<Self>;
 }
 
 impl<T, A, V: View<T, A>> ViewExt<T, A> for V {
@@ -20,7 +25,12 @@ impl<T, A, V: View<T, A>> ViewExt<T, A> for V {
         BackgroundView::new(color, self)
     }
 
-    fn rounded(self, radii: impl Into<RoundedRectRadii>) -> RoundedView<Self> {
-        RoundedView::new(radii.into(), self)
+    fn border(
+        self,
+        radii: impl Into<RoundedRectRadii>,
+        width: f32,
+        brush: Brush,
+    ) -> BorderView<Self> {
+        BorderView::new(radii.into(), width, brush, self)
     }
 }

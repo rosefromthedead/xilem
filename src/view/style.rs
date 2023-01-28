@@ -1,10 +1,10 @@
 use glazier::kurbo::RoundedRectRadii;
-use vello::peniko::Color;
+use vello::peniko::{Brush, Color, Stroke};
 
 use crate::{
     widget::{
         compose_style::{
-            background::BackgroundWidget, padding::PaddingWidget, rounded::RoundedWidget,
+            background::BackgroundWidget, padding::PaddingWidget, rounded::BorderWidget,
         },
         ChangeFlags,
     },
@@ -123,22 +123,25 @@ impl<V> BackgroundView<V> {
     }
 }
 
-pub struct RoundedView<V> {
-    radii: RoundedRectRadii,
+pub struct BorderView<V> {
     view: V,
+    radii: RoundedRectRadii,
+    width: f32,
+    brush: Brush,
 }
 
-impl<T, A, V: View<T, A>> View<T, A> for RoundedView<V>
+impl<T, A, V: View<T, A>> View<T, A> for BorderView<V>
 where
     V::Element: 'static,
 {
     type State = V::State;
 
-    type Element = RoundedWidget<V::Element>;
+    type Element = BorderWidget<V::Element>;
 
     fn build(&self, cx: &mut crate::view::Cx) -> (crate::id::Id, Self::State, Self::Element) {
         let (id, state, element) = self.view.build(cx);
-        let element = RoundedWidget::new(element, self.radii);
+        let stroke = Stroke::new(self.width);
+        let element = BorderWidget::new(element, self.radii, stroke, self.brush.clone());
         (id, state, element)
     }
 
@@ -153,6 +156,14 @@ where
         let mut flags = ChangeFlags::empty();
         if prev.radii != self.radii {
             element.radii = self.radii;
+            flags |= ChangeFlags::PAINT;
+        }
+        if prev.width != self.width {
+            element.stroke.width = self.width;
+            flags |= ChangeFlags::PAINT;
+        }
+        if prev.brush != self.brush {
+            element.brush = self.brush.clone();
             flags |= ChangeFlags::PAINT;
         }
         flags |= cx.with_id(*id, |cx| {
@@ -173,8 +184,13 @@ where
     }
 }
 
-impl<V> RoundedView<V> {
-    pub fn new(radii: RoundedRectRadii, view: V) -> Self {
-        RoundedView { radii, view }
+impl<V> BorderView<V> {
+    pub fn new(radii: RoundedRectRadii, width: f32, brush: Brush, view: V) -> Self {
+        BorderView {
+            view,
+            radii,
+            width,
+            brush,
+        }
     }
 }
