@@ -37,7 +37,7 @@ where
     ) -> ChangeFlags {
         let mut flags = ChangeFlags::empty();
         if prev.width != self.width {
-            element.set_width(self.width);
+            element.width = self.width;
             flags |= ChangeFlags::LAYOUT | ChangeFlags::PAINT;
         }
         flags |= cx.with_id(*id, |cx| {
@@ -93,7 +93,7 @@ where
     ) -> ChangeFlags {
         let mut flags = ChangeFlags::empty();
         if prev.color != self.color {
-            element.set_color(self.color);
+            element.color = self.color;
             flags |= ChangeFlags::LAYOUT | ChangeFlags::PAINT;
         }
         flags |= cx.with_id(*id, |cx| {

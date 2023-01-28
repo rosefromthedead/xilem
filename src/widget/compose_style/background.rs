@@ -8,15 +8,12 @@ use crate::{widget::BoxConstraints, Widget};
 
 pub struct BackgroundWidget<W: Widget> {
     pub(crate) widget: W,
-    color: Color,
+    pub color: Color,
 }
 
 impl<W: Widget> BackgroundWidget<W> {
     pub fn new(widget: W, color: Color) -> Self {
         Self { widget, color }
-    }
-    pub(crate) fn set_color(&mut self, color: Color) {
-        self.color = color;
     }
 }
 

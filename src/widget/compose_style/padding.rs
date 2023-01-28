@@ -5,16 +5,12 @@ use crate::{widget::BoxConstraints, Widget};
 
 pub struct PaddingWidget<W: Widget> {
     pub(crate) widget: W,
-    width: f64,
+    pub width: f64,
 }
 
 impl<W: Widget> PaddingWidget<W> {
     pub fn new(widget: W, width: f64) -> Self {
         Self { widget, width }
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width;
     }
 }
 
