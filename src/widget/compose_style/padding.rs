@@ -1,7 +1,10 @@
-use glazier::kurbo::{Affine, Size};
+use glazier::kurbo::{Affine, Size, Vec2};
 use vello::{SceneBuilder, SceneFragment};
 
-use crate::{widget::BoxConstraints, Widget};
+use crate::{
+    widget::{BoxConstraints, Event},
+    Widget,
+};
 
 pub struct PaddingWidget<W: Widget> {
     pub(crate) widget: W,
@@ -15,8 +18,18 @@ impl<W: Widget> PaddingWidget<W> {
 }
 
 impl<W: Widget> Widget for PaddingWidget<W> {
-    fn event(&mut self, cx: &mut crate::widget::EventCx, event: &crate::widget::Event) {
-        self.widget.event(cx, event)
+    fn event(&mut self, cx: &mut crate::widget::EventCx, event: &Event) {
+        let mut new = event.clone();
+        match new {
+            Event::MouseDown(ref mut mouse)
+            | Event::MouseUp(ref mut mouse)
+            | Event::MouseMove(ref mut mouse)
+            | Event::MouseWheel(ref mut mouse) => {
+                mouse.pos -= Vec2::new(self.width, self.width);
+            }
+            _ => {}
+        }
+        self.widget.event(cx, &new)
     }
 
     fn lifecycle(
