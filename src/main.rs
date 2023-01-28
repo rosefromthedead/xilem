@@ -1,8 +1,9 @@
-use xilem::{button, stack, App, AppLauncher, Axis, View};
+use xilem::{button, checkbox, stack, App, AppLauncher, Axis, View};
 
 fn app_logic(data: &mut (i32, Axis)) -> impl View<(i32, Axis)> {
     stack(
         (
+            checkbox(|_data, state| println!("{state}")),
             button(format!("{}+", data.0), |data: &mut (i32, Axis)| data.0 += 1),
             button(format!("{}-", data.0), |data: &mut (i32, Axis)| data.0 -= 1),
             button(format!("flip!"), |(_, ref mut axis): &mut (i32, Axis)| {

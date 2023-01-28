@@ -14,6 +14,7 @@
 
 mod box_constraints;
 pub mod button;
+pub mod checkbox;
 mod contexts;
 mod core;
 //pub mod layout_observer;
