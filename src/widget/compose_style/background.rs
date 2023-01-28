@@ -4,18 +4,15 @@ use vello::{
     SceneBuilder,
 };
 
-use crate::{
-    widget::{BoxConstraints, Pod},
-    Widget,
-};
+use crate::{widget::BoxConstraints, Widget};
 
-pub struct BackgroundWidget {
-    pub(crate) widget: Pod,
+pub struct BackgroundWidget<W: Widget> {
+    pub(crate) widget: W,
     color: Color,
 }
 
-impl BackgroundWidget {
-    pub fn new(widget: Pod, color: Color) -> Self {
+impl<W: Widget> BackgroundWidget<W> {
+    pub fn new(widget: W, color: Color) -> Self {
         Self { widget, color }
     }
     pub(crate) fn set_color(&mut self, color: Color) {
@@ -23,7 +20,7 @@ impl BackgroundWidget {
     }
 }
 
-impl Widget for BackgroundWidget {
+impl<W: Widget> Widget for BackgroundWidget<W> {
     fn event(&mut self, cx: &mut crate::widget::EventCx, event: &crate::widget::Event) {
         self.widget.event(cx, event)
     }
@@ -45,8 +42,6 @@ impl Widget for BackgroundWidget {
     }
 
     fn paint(&mut self, cx: &mut crate::widget::PaintCx, builder: &mut SceneBuilder) {
-        self.widget.paint(cx);
-        let fragment = self.widget.fragment();
         builder.fill(
             Fill::NonZero,
             Affine::IDENTITY,
@@ -54,7 +49,7 @@ impl Widget for BackgroundWidget {
             None,
             &cx.size().to_rect(),
         );
-        builder.append(fragment, None)
+        self.widget.paint(cx, builder);
     }
 
     fn accessibility(&mut self, cx: &mut crate::widget::AccessCx) {

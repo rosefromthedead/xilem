@@ -1,10 +1,9 @@
 use vello::peniko::Color;
 
 use crate::{
-    id::Id,
     widget::{
         compose_style::{background::BackgroundWidget, padding::PaddingWidget},
-        ChangeFlags, Pod,
+        ChangeFlags,
     },
     View,
 };
@@ -18,14 +17,14 @@ impl<T, A, V: View<T, A>> View<T, A> for PaddingView<V>
 where
     V::Element: 'static,
 {
-    type State = (Id, V::State);
+    type State = V::State;
 
-    type Element = PaddingWidget;
+    type Element = PaddingWidget<V::Element>;
 
     fn build(&self, cx: &mut crate::view::Cx) -> (crate::id::Id, Self::State, Self::Element) {
-        let (id, (child_id, state, element)) = cx.with_new_id(|cx| self.view.build(cx));
-        let element = PaddingWidget::new(Pod::new(element), self.width);
-        (id, (child_id, state), element)
+        let (id, state, element) = self.view.build(cx);
+        let element = PaddingWidget::new(element, self.width);
+        (id, state, element)
     }
 
     fn rebuild(
@@ -33,7 +32,7 @@ where
         cx: &mut crate::view::Cx,
         prev: &Self,
         id: &mut crate::id::Id,
-        (child_id, state): &mut Self::State,
+        state: &mut Self::State,
         element: &mut Self::Element,
     ) -> ChangeFlags {
         let mut flags = ChangeFlags::empty();
@@ -42,9 +41,8 @@ where
             flags |= ChangeFlags::LAYOUT | ChangeFlags::PAINT;
         }
         flags |= cx.with_id(*id, |cx| {
-            let child_element = element.widget.downcast_mut().unwrap();
             self.view
-                .rebuild(cx, &prev.view, child_id, state, child_element)
+                .rebuild(cx, &prev.view, id, state, &mut element.widget)
         });
         flags
     }
@@ -52,13 +50,11 @@ where
     fn message(
         &self,
         id_path: &[crate::id::Id],
-        (child_id, state): &mut Self::State,
+        state: &mut Self::State,
         message: Box<dyn std::any::Any>,
         app_state: &mut T,
     ) -> crate::event::MessageResult<A> {
-        let (left, right) = id_path.split_at(1);
-        assert!(left[0] == *child_id);
-        self.view.message(right, state, message, app_state)
+        self.view.message(id_path, state, message, app_state)
     }
 }
 
@@ -77,14 +73,14 @@ impl<T, A, V: View<T, A>> View<T, A> for BackgroundView<V>
 where
     V::Element: 'static,
 {
-    type State = (Id, V::State);
+    type State = V::State;
 
-    type Element = BackgroundWidget;
+    type Element = BackgroundWidget<V::Element>;
 
     fn build(&self, cx: &mut crate::view::Cx) -> (crate::id::Id, Self::State, Self::Element) {
-        let (id, (child_id, state, element)) = cx.with_new_id(|cx| self.view.build(cx));
-        let element = BackgroundWidget::new(Pod::new(element), self.color);
-        (id, (child_id, state), element)
+        let (id, state, element) = self.view.build(cx);
+        let element = BackgroundWidget::new(element, self.color);
+        (id, state, element)
     }
 
     fn rebuild(
@@ -92,7 +88,7 @@ where
         cx: &mut crate::view::Cx,
         prev: &Self,
         id: &mut crate::id::Id,
-        (child_id, state): &mut Self::State,
+        state: &mut Self::State,
         element: &mut Self::Element,
     ) -> ChangeFlags {
         let mut flags = ChangeFlags::empty();
@@ -101,9 +97,8 @@ where
             flags |= ChangeFlags::LAYOUT | ChangeFlags::PAINT;
         }
         flags |= cx.with_id(*id, |cx| {
-            let child_element = element.widget.downcast_mut().unwrap();
             self.view
-                .rebuild(cx, &prev.view, child_id, state, child_element)
+                .rebuild(cx, &prev.view, id, state, &mut element.widget)
         });
         flags
     }
@@ -111,13 +106,11 @@ where
     fn message(
         &self,
         id_path: &[crate::id::Id],
-        (child_id, state): &mut Self::State,
+        state: &mut Self::State,
         message: Box<dyn std::any::Any>,
         app_state: &mut T,
     ) -> crate::event::MessageResult<A> {
-        let (left, right) = id_path.split_at(1);
-        assert!(left[0] == *child_id);
-        self.view.message(right, state, message, app_state)
+        self.view.message(id_path, state, message, app_state)
     }
 }
 

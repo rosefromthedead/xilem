@@ -1,18 +1,15 @@
-use glazier::kurbo::{Affine, Point, Size};
-use vello::SceneBuilder;
+use glazier::kurbo::{Affine, Size};
+use vello::{SceneBuilder, SceneFragment};
 
-use crate::{
-    widget::{BoxConstraints, Pod},
-    Widget,
-};
+use crate::{widget::BoxConstraints, Widget};
 
-pub struct PaddingWidget {
-    pub(crate) widget: Pod,
+pub struct PaddingWidget<W: Widget> {
+    pub(crate) widget: W,
     width: f64,
 }
 
-impl PaddingWidget {
-    pub fn new(widget: Pod, width: f64) -> Self {
+impl<W: Widget> PaddingWidget<W> {
+    pub fn new(widget: W, width: f64) -> Self {
         Self { widget, width }
     }
 
@@ -21,7 +18,7 @@ impl PaddingWidget {
     }
 }
 
-impl Widget for PaddingWidget {
+impl<W: Widget> Widget for PaddingWidget<W> {
     fn event(&mut self, cx: &mut crate::widget::EventCx, event: &crate::widget::Event) {
         self.widget.event(cx, event)
     }
@@ -43,17 +40,15 @@ impl Widget for PaddingWidget {
         let padding_size = Size::new(self.width * 2., self.width * 2.);
         let bc = bc.shrink(padding_size);
         let result = self.widget.layout(cx, &bc) + padding_size;
-        self.widget.state.origin = Point {
-            x: self.width,
-            y: self.width,
-        };
         result
     }
 
     fn paint(&mut self, cx: &mut crate::widget::PaintCx, builder: &mut SceneBuilder) {
-        self.widget.paint(cx);
-        let fragment = self.widget.fragment();
-        builder.append(fragment, Some(Affine::translate((self.width, self.width))))
+        let mut fragment = SceneFragment::new();
+        let mut sub_builder = SceneBuilder::for_fragment(&mut fragment);
+        self.widget.paint(cx, &mut sub_builder);
+        sub_builder.finish();
+        builder.append(&fragment, Some(Affine::translate((self.width, self.width))));
     }
 
     fn accessibility(&mut self, cx: &mut crate::widget::AccessCx) {

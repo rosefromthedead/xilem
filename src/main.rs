@@ -17,8 +17,8 @@ fn app_logic(data: &mut (i32, Axis)) -> impl View<(i32, Axis)> {
         4.0,
         data.1,
     )
-    .background(Color::rgb8(0x20, 0x20, 0x28))
     .padding(4.0)
+    .background(Color::rgb8(0x20, 0x20, 0x28))
 }
 
 fn main() {
