@@ -1,12 +1,17 @@
 use crate::{widget::ChangeFlags, View};
 
-pub fn checkbox<T, A>(on_change: impl Fn(&mut T, bool) -> A + Send + 'static) -> impl View<T, A> {
+pub fn checkbox<T, A>(
+    enabled: bool,
+    on_change: impl Fn(&mut T, bool) -> A + Send + 'static,
+) -> impl View<T, A> {
     Checkbox {
+        enabled,
         on_change: Box::new(on_change),
     }
 }
 
 pub struct Checkbox<T, A> {
+    enabled: bool,
     on_change: Box<dyn Fn(&mut T, bool) -> A + Send>,
 }
 
@@ -15,8 +20,9 @@ impl<T, A> View<T, A> for Checkbox<T, A> {
     type Element = crate::widget::checkbox::Checkbox;
 
     fn build(&self, cx: &mut super::Cx) -> (crate::id::Id, Self::State, Self::Element) {
-        let (id, el) =
-            cx.with_new_id(|cx| crate::widget::checkbox::Checkbox::new(cx.id_path().clone()));
+        let (id, el) = cx.with_new_id(|cx| {
+            crate::widget::checkbox::Checkbox::new(cx.id_path().clone(), self.enabled)
+        });
         (id, (), el)
     }
 
@@ -28,7 +34,12 @@ impl<T, A> View<T, A> for Checkbox<T, A> {
         state: &mut Self::State,
         element: &mut Self::Element,
     ) -> ChangeFlags {
-        ChangeFlags::empty()
+        if prev.enabled != self.enabled {
+            element.enabled = self.enabled;
+            ChangeFlags::PAINT
+        } else {
+            ChangeFlags::empty()
+        }
     }
 
     fn message(

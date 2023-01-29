@@ -1,33 +1,39 @@
 use vello::peniko::{Brush, Color, Gradient};
 use xilem::{button, checkbox, stack, App, AppLauncher, Axis, View, ViewExt};
 
-fn app_logic(data: &mut (i32, f32, Axis)) -> impl View<(i32, f32, Axis)> {
-    data.1 += 0.01;
-    data.1 = data.1 % 1.0;
-    let x = data.1 * 2.0 - 0.5;
+struct Data {
+    checked: bool,
+    counter: i32,
+    axis: Axis,
+    shine: f32,
+}
+
+fn app_logic(data: &mut Data) -> impl View<Data> {
+    data.shine += 0.01;
+    data.shine = data.shine % 1.0;
+    let x = data.shine * 2.0 - 0.5;
     let border_dark = Color::rgb8(0x08, 0x58, 0x60);
     let border_light = Color::rgb8(0x08, 0xd8, 0xea);
     stack(
         (
-            checkbox(|_data, state| println!("{state}")),
-            button(format!("{}+", data.0), |data: &mut (i32, f32, Axis)| {
-                data.0 += 1
+            checkbox(data.checked, |data: &mut Data, checked| {
+                data.checked = checked
             }),
-            button(format!("{}-", data.0), |data: &mut (i32, f32, Axis)| {
-                data.0 -= 1
+            button(format!("{}+", data.counter), |data: &mut Data| {
+                data.counter += 1
             }),
-            button(
-                format!("flip!"),
-                |(_, _, ref mut axis): &mut (i32, f32, Axis)| {
-                    *axis = match axis {
-                        Axis::Horizontal => Axis::Vertical,
-                        Axis::Vertical => Axis::Horizontal,
-                    }
-                },
-            ),
+            button(format!("{}-", data.counter), |data: &mut Data| {
+                data.counter -= 1
+            }),
+            button(format!("flip!"), |data: &mut Data| {
+                data.axis = match data.axis {
+                    Axis::Horizontal => Axis::Vertical,
+                    Axis::Vertical => Axis::Horizontal,
+                }
+            }),
         ),
         4.0,
-        data.2,
+        data.axis,
     )
     .padding(4.0)
     .background(Color::rgb8(0x20, 0x20, 0x28))
@@ -57,6 +63,12 @@ fn main() {
     window_handle.show();
     app.run(None);
     */
-    let app = App::new((0, 0.0, Axis::Vertical), app_logic);
+    let data = Data {
+        checked: false,
+        counter: 0,
+        axis: Axis::Vertical,
+        shine: 0.0,
+    };
+    let app = App::new(data, app_logic);
     AppLauncher::new(app).run()
 }

@@ -10,15 +10,12 @@ use super::{Event, LifeCycle};
 
 pub struct Checkbox {
     path: IdPath,
-    enabled: bool,
+    pub enabled: bool,
 }
 
 impl Checkbox {
-    pub fn new(path: IdPath) -> Self {
-        Checkbox {
-            path,
-            enabled: false,
-        }
+    pub fn new(path: IdPath, enabled: bool) -> Self {
+        Checkbox { path, enabled }
     }
 }
 
