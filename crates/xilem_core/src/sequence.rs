@@ -21,7 +21,7 @@ macro_rules! impl_view_tuple {
                 state: &mut Self::State,
                 els: &mut dyn $elements_splice,
             ) -> ChangeFlags {
-                let mut changed = <$changeflags>::default();
+                let mut changed = <$changeflags>::empty();
                 $(
                     let el_changed = self.$i.rebuild(cx, &prev.$i, &mut state.$i, els);
                     changed |= el_changed;
@@ -277,7 +277,7 @@ macro_rules! generate_viewsequence_trait {
                 state: &mut Self::State,
                 elements: &mut dyn $elements_splice,
             ) -> $changeflags {
-                let mut changed = <$changeflags>::default();
+                let mut changed = <$changeflags>::empty();
                 for ((child, child_prev), child_state) in self.iter().zip(prev).zip(state.iter_mut()) {
                     let el_changed = child.rebuild(cx, child_prev, child_state, elements);
                     changed |= el_changed;
