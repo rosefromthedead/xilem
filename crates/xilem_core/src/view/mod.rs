@@ -18,7 +18,7 @@ mod memoize;
 ///    the state type requirements
 #[macro_export]
 macro_rules! generate_view_trait {
-    ($viewtrait:ident, $bound:ident, $cx:ty, $changeflags:ty; $($ss:tt)*) => {
+    ($viewtrait:ident, $bound:path, $cx:ty, $changeflags:ty; $($ss:tt)*) => {
         /// A view object representing a node in the UI.
         ///
         /// This is a central trait for representing UI. An app will generate a tree of

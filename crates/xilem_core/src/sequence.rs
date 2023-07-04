@@ -55,8 +55,7 @@ macro_rules! impl_view_tuple {
 }
 #[macro_export]
 macro_rules! generate_viewsequence_trait {
-    ($viewseq:ident, $view:ident, $viewmarker: ident, $elements_splice: ident, $bound:ident, $cx:ty, $changeflags:ty, $pod:ty; $( $ss:tt )* ) => {
-
+    ($viewseq:ident, $view:ident, $viewmarker: ident, $elements_splice: ident, $bound:path, $cx:ty, $changeflags:ty, $pod:ty; $( $ss:tt )* ) => {
         /// A temporary "splice" to add, update, delete and monitor elements in a sequence of elements.
         /// It is mainly intended for view sequences
         ///
